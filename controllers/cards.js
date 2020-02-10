@@ -13,7 +13,7 @@ module.exports.getAllCards = (req, res) => {
   Card.find({})
     .populate('owner')
     .then((cards) => res.send({ data: cards }))
-    .catch(() => res.status(500).send({ message: 'Невозможно найти карточку' }));
+    .catch(() => res.status(500).send({ message: 'Невозможно найти карточки' }));
 };
 
 module.exports.deleteCard = (req, res) => {
