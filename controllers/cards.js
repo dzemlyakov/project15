@@ -18,6 +18,6 @@ module.exports.getAllCards = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.id)
-    .then((card) => res.send(card !== null ? { data: card } : { data: 'Невозможно удалить' }))
+    .then((card) => (card !== null ? res.status(200).send({ data: card }) : res.status(404).send({ data: 'Невозможно удалить, карточка с таким ID не найдена' })))
     .catch(() => res.status(500).send({ message: 'Невозможно удалить карточку' }));
 };
