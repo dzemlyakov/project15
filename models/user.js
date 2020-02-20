@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-const { INVALID_LINK } = require('../constants/constants');
+const { INVALID_LINK, INVALID_MAIL } = require('../constants/constants');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -19,7 +19,19 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 8,
+  },
 });
+
 userSchema.path('avatar').validate(validator.isURL, INVALID_LINK);
+userSchema.path('email').validate(validator.isEmail, INVALID_MAIL);
 
 module.exports = mongoose.model('user', userSchema);
