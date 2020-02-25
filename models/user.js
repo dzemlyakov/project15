@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcryptjs');
 const { INVALID_LINK, INVALID_MAIL } = require('../constants/constants');
 
 const userSchema = new mongoose.Schema({
@@ -37,7 +37,7 @@ userSchema.path('email').validate(validator.isEmail, INVALID_MAIL);
 
 // eslint-disable-next-line func-names
 userSchema.statics.findUserByCredentials = function (email, password) {
-  return this.findOne({ email })
+  return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
         return Promise.reject(new Error('Неправильные почта или пароль'));
