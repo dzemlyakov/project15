@@ -1,6 +1,8 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 const cardsRouter = require('./routes/cards');
 const usersRouter = require('./routes/users');
 const auth = require('./middlewares/auth');
@@ -19,6 +21,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(cookieParser());
 
 app.post('/signin', login);
 app.post('/signup', createUser);
