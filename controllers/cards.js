@@ -18,14 +18,13 @@ module.exports.getAllCards = (req, res) => {
 
 
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.id)
-
-    // eslint-disable-next-line consistent-return
+  Card.findById(req.params.id)
     .then((card) => {
-      if (JSON.stringify(card.owner) !== JSON.stringify(req.user._id)) return Promise.reject(new Error('У вас нет прав для удаления этой карточки!'));
-      Card.remove(card)
-        .then((cardDelete) => (cardDelete !== null ? res.status(200).send({ data: card }) : res.status(404).send({ data: 'Невозможно удалить, карточка с таким ID не найдена' })))
-        .catch(() => res.status(500).send({ message: 'Невозможно удалить эту карточку' }));
+      if (String(card.owner._id) !== String(req.user._id)) {
+        return res.status(501).send({ message: 'Невозможно удалить чужую карточку, отсутсвуют права!' });
+      }
+      return Card.findByIdAndRemove(req.params.id);
     })
+    .then((card) => (card !== null ? res.status(200).send({ data: card }) : res.status(404).send({ data: 'Невозможно удалить, карточка с таким ID не найдена' })))
     .catch(() => res.status(500).send({ message: 'Невозможно удалить карточку' }));
 };
