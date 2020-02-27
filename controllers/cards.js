@@ -27,5 +27,5 @@ module.exports.deleteCard = (req, res) => {
       return Card.remove(card)
         .then(() => res.status(200).send({ data: card }));
     })
-    .catch(() => res.status(404).send({ message: 'Невозможно удалить, карточка с таким ID не найдена' }));
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка при удалении карточки' }));
 };

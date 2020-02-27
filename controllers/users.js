@@ -2,8 +2,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
-const { NODE_ENV, JWT_SECRET } = process.env;
-const { DEV_SECRET } = require('../config/config');
+
+const { JWT_SECRET } = require('../config/config');
 
 
 // eslint-disable-next-line consistent-return
@@ -25,7 +25,7 @@ module.exports.createUser = (req, res) => {
         avatar: user.avatar,
       });
     })
-    .catch(() => res.status(400).send({ message: 'Произошла ошибка при создании пользователя' }));
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка при создании пользователя' }));
 };
 
 module.exports.login = (req, res) => {
@@ -33,7 +33,7 @@ module.exports.login = (req, res) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : DEV_SECRET, { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
       res.status(201).cookie('jwt', token, {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,

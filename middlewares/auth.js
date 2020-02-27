@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const { NODE_ENV, JWT_SECRET } = process.env;
-const { DEV_SECRET } = require('../config/config');
+const { JWT_SECRET } = require('../config/config');
 
 // eslint-disable-next-line consistent-return
 module.exports = (req, res, next) => {
@@ -9,7 +8,7 @@ module.exports = (req, res, next) => {
   let payload;
 
   try {
-    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : DEV_SECRET);
+    payload = jwt.verify(token, JWT_SECRET);
   } catch (err) {
     return res
       .status(401)
