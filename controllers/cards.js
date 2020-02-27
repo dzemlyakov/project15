@@ -20,11 +20,12 @@ module.exports.getAllCards = (req, res) => {
 module.exports.deleteCard = (req, res) => {
   Card.findById(req.params.id)
     .then((card) => {
-      if (String(card.owner._id) !== String(req.user._id)) {
-        return res.status(501).send({ message: 'Невозможно удалить чужую карточку, отсутсвуют права!' });
+      if (card === null) return res.status(404).send({ message: 'Невозможно удалить, карточка с таким ID не найдена' });
+      if (!card.owner.equals(req.user._id)) {
+        return res.status(403).send({ message: 'Невозможно удалить чужую карточку, отсутсвуют права!' });
       }
-      return Card.findByIdAndRemove(req.params.id);
+      return Card.remove(card)
+        .then(() => res.status(200).send({ data: card }));
     })
-    .then((card) => (card !== null ? res.status(200).send({ data: card }) : res.status(404).send({ data: 'Невозможно удалить, карточка с таким ID не найдена' })))
-    .catch(() => res.status(500).send({ message: 'Невозможно удалить карточку' }));
+    .catch(() => res.status(404).send({ message: 'Невозможно удалить, карточка с таким ID не найдена' }));
 };
