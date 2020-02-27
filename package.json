@@ -1,6 +1,6 @@
 {
   "name": "project14",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Back-end project Mesto",
   "main": "index.js",
   "scripts": {
