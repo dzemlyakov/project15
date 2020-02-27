@@ -8,12 +8,13 @@ const usersRouter = require('./routes/users');
 const auth = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users');
 
-const { PORT = 3000 } = process.env;
+const { PORT, DATABASE_URL } = require('./config/config');
+
 const app = express();
 
 app.use(cookieParser());
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
+mongoose.connect(DATABASE_URL, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
