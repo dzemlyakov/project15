@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const cardsRouter = require('./routes/cards');
 const usersRouter = require('./routes/users');
+const errorHandler = require('./middlewares/erorr-handler');
 const auth = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users');
 
@@ -34,5 +35,6 @@ app.use('/users', auth, usersRouter);
 app.use('*', (req, res) => {
   res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
 });
+app.use(errorHandler);
 
 app.listen(PORT);
