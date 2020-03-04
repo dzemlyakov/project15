@@ -16,8 +16,16 @@ module.exports.getAllCards = (req, res) => {
     .catch(() => res.status(500).send({ message: 'Невозможно найти карточки' }));
 };
 
+
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.id)
-    .then((card) => (card !== null ? res.status(200).send({ data: card }) : res.status(404).send({ data: 'Невозможно удалить, карточка с таким ID не найдена' })))
-    .catch(() => res.status(500).send({ message: 'Невозможно удалить карточку' }));
+  Card.findById(req.params.id)
+    .then((card) => {
+      if (card === null) return res.status(404).send({ message: 'Невозможно удалить, карточка с таким ID не найдена' });
+      if (!card.owner.equals(req.user._id)) {
+        return res.status(403).send({ message: 'Невозможно удалить чужую карточку, отсутсвуют права!' });
+      }
+      return Card.remove(card)
+        .then(() => res.status(200).send({ data: card }));
+    })
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка при удалении карточки' }));
 };
