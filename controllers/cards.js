@@ -1,31 +1,34 @@
 const Card = require('../models/card');
+const { ForbiddenError, NotFoundError } = require('../errors/index-errors');
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
 
   Card.create({ name, link, owner })
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(500).send({ message: `Невозможно создать карточку -- ${err}` }));
+    .catch(next);
 };
 
-module.exports.getAllCards = (req, res) => {
+module.exports.getAllCards = (req, res, next) => {
   Card.find({})
     .populate('owner')
     .then((cards) => res.send({ data: cards }))
-    .catch(() => res.status(500).send({ message: 'Невозможно найти карточки' }));
+    .catch(next);
 };
 
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.id)
     .then((card) => {
-      if (card === null) return res.status(404).send({ message: 'Невозможно удалить, карточка с таким ID не найдена' });
+      if (card === null) {
+        throw new NotFoundError('Такая карточка не найдена');
+      }
       if (!card.owner.equals(req.user._id)) {
-        return res.status(403).send({ message: 'Невозможно удалить чужую карточку, отсутсвуют права!' });
+        throw new ForbiddenError('Невозможно удалить чужую карточку, отсутсвуют права!');
       }
       return Card.remove(card)
         .then(() => res.status(200).send({ data: card }));
     })
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка при удалении карточки' }));
+    .catch(next);
 };
