@@ -3,6 +3,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
+const { errors } = require('celebrate');
+const { signupValidation, signinValidation } = require('./middlewares/validation');
 const cardsRouter = require('./routes/cards');
 const usersRouter = require('./routes/users');
 const { errorHandler } = require('./middlewares/erorr-handler');
@@ -26,8 +28,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', signinValidation, login);
+app.post('/signup', signupValidation, createUser);
 
 app.use('/cards', auth, cardsRouter);
 
@@ -35,6 +37,7 @@ app.use('/users', auth, usersRouter);
 app.use('*', (req, res) => {
   res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
 });
+app.use(errors());
 app.use(errorHandler);
 
 app.listen(PORT);
