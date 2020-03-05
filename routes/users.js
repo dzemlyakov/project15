@@ -1,4 +1,5 @@
 const users = require('express').Router();
+const { celebrate, Joi } = require('celebrate');
 const {
   getAllUsers,
   getSingleUser,
@@ -6,6 +7,10 @@ const {
 
 
 users.get('/', getAllUsers);
-users.get('/:id', getSingleUser);
+users.get('/:id', celebrate({
+  params: Joi.object().keys({
+    id: Joi.string().alphanum().length(24),
+  }),
+}), getSingleUser);
 
 module.exports = users;
