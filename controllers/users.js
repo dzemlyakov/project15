@@ -4,10 +4,11 @@ const User = require('../models/user');
 
 
 const { JWT_SECRET } = require('../config/config');
+const { NotFoundError, UnauthorizedError, InternalServerError } = require('../errors/index-errors');
 
 
 // eslint-disable-next-line consistent-return
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   if (Object.keys(req.body).length === 0) return res.status(400).send({ message: 'Тело запроса пустое' });
   const {
     name, about, avatar, email, password,
@@ -17,6 +18,9 @@ module.exports.createUser = (req, res) => {
       name, about, avatar, email, password: hash,
     }))
     .then((user) => {
+      if (!user) {
+        throw new InternalServerError('Произошла ошибка при создании пользователя');
+      }
       res.status(201).send({
         _id: user._id,
         email: user.email,
@@ -25,10 +29,10 @@ module.exports.createUser = (req, res) => {
         avatar: user.avatar,
       });
     })
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка при создании пользователя' }));
+    .catch(next);
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -40,20 +44,28 @@ module.exports.login = (req, res) => {
         sameSite: true,
       }).send({ message: 'Success!' });
     })
-    .catch(() => {
-      res.status(401).send({ message: 'Неправильные почта и пароль' });
-    });
+    .catch(() => next(new UnauthorizedError('Неправильные почта и пароль')));
 };
 
 
-module.exports.getAllUsers = (req, res) => {
+module.exports.getAllUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.send({ data: users }))
-    .catch(() => res.status(500).send({ message: 'Невозможно найти пользователей' }));
+    .then((users) => {
+      if (!users) {
+        throw new InternalServerError('Невозможно найти пользователей');
+      }
+      return res.send({ data: users });
+    })
+    .catch(next);
 };
 
-module.exports.getSingleUser = (req, res) => {
+module.exports.getSingleUser = (req, res, next) => {
   User.findById(req.params.id)
-    .then((user) => (user === null ? res.status(404).send({ message: 'Такой пользователь не найден' }) : res.send({ data: user })))
-    .catch(() => res.status(500).send({ message: 'Нет пользователя с таким id' }));
+    .then((user) => {
+      if (user === null) {
+        throw new NotFoundError('Такой пользователь не найден');
+      }
+      return res.send({ data: user });
+    })
+    .catch(next);
 };

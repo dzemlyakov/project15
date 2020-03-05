@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const cardsRouter = require('./routes/cards');
 const usersRouter = require('./routes/users');
-const errorHandler = require('./middlewares/erorr-handler');
+const { errorHandler } = require('./middlewares/erorr-handler');
 const auth = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users');
 
