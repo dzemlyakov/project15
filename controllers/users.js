@@ -9,7 +9,6 @@ const { NotFoundError, UnauthorizedError, InternalServerError } = require('../er
 
 // eslint-disable-next-line consistent-return
 module.exports.createUser = (req, res, next) => {
-  if (Object.keys(req.body).length === 0) return res.status(400).send({ message: 'Тело запроса пустое' });
   const {
     name, about, avatar, email, password,
   } = req.body;
