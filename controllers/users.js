@@ -41,7 +41,7 @@ module.exports.login = (req, res, next) => {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,
         sameSite: true,
-      }).send({ message: 'Success!' });
+      }).send({ message: 'Success!', jwt: JWT_SECRET });
     })
     .catch(() => next(new UnauthorizedError('Неправильные почта и пароль')));
 };
