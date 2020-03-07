@@ -1,8 +1,10 @@
 require('dotenv').config();
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
 const { errors } = require('celebrate');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { signupValidation, signinValidation } = require('./middlewares/validation');
@@ -16,6 +18,15 @@ const { PORT, DATABASE_URL } = require('./config/config');
 const NotFoundError = require('./errors/not-found-error');
 
 const app = express();
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+});
+
+
+app.use(limiter);
+app.use(helmet());
 
 app.use(cookieParser());
 

@@ -4,7 +4,7 @@ const User = require('../models/user');
 
 
 const { JWT_SECRET } = require('../config/config');
-const { NotFoundError, UnauthorizedError, InternalServerError } = require('../errors/index-errors');
+const { NotFoundError, UnauthorizedError } = require('../errors/index-errors');
 
 
 // eslint-disable-next-line consistent-return
@@ -17,9 +17,6 @@ module.exports.createUser = (req, res, next) => {
       name, about, avatar, email, password: hash,
     }))
     .then((user) => {
-      if (!user) {
-        throw new InternalServerError('Произошла ошибка при создании пользователя');
-      }
       res.status(201).send({
         _id: user._id,
         email: user.email,
@@ -41,7 +38,7 @@ module.exports.login = (req, res, next) => {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,
         sameSite: true,
-      }).send({ message: 'Success!', jwt: JWT_SECRET });
+      }).send({ message: 'Success!' });
     })
     .catch(() => next(new UnauthorizedError('Неправильные почта и пароль')));
 };
@@ -49,12 +46,7 @@ module.exports.login = (req, res, next) => {
 
 module.exports.getAllUsers = (req, res, next) => {
   User.find({})
-    .then((users) => {
-      if (!users) {
-        throw new InternalServerError('Невозможно найти пользователей');
-      }
-      return res.send({ data: users });
-    })
+    .then((users) => res.send({ data: users }))
     .catch(next);
 };
 
