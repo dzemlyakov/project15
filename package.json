@@ -4,7 +4,7 @@
   "description": "Back-end project Mesto",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon app.js",
+    "dev": "NODE_ENV=develop nodemon app.js",
     "start": "node app.js"
   },
   "repository": {
