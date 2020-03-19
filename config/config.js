@@ -2,6 +2,8 @@ require('dotenv').config();
 
 const isProduction = process.env.NODE_ENV === 'production';
 
+// eslint-disable-next-line no-console
+console.log({ isProduction });
 
 module.exports = {
   PORT: 3000,
